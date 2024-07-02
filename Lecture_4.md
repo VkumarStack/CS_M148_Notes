@@ -50,3 +50,14 @@
     - Achieving a very small variance results in a simple model, which results in a higher bias (not powerful enough)
         - Think of a polynomial that does not have a high enough degree
         - This is related to *underfitting*
+## Regularization
+- Regularization involves modifying the loss function *L* in such a manner that penalizes some specified properties of the model parameters - doing this attempts to reduce the testing error (though at the expensive of increased training error)
+    - $L_{reg}(\beta) = L(\beta) + \lambda R(\beta)$
+- **LASSO (L1) Regularization**: Discourages extreme values of parameter weights (not bias) 
+    - $L_{LASSO} = L(\beta) + \lambda \Sigma_j |\beta_j|$
+    - The bias constant term ($\beta_0$) is not regularized
+    - This type of regularization encourages sparse features (some weights are *zero*) - this encourages *feature selection*
+- **Ridge (L2) Regularization**: Penalizes the squares of the parameter magnitudes
+    - $L_{Ridge} = L(\beta) + \lambda \Sigma_j \beta_j^2$
+    - The bias constant term ($\beta_0$) is not regularize
+- A smaller $\lambda$ results in virtually no regularization, whereas too large of a $\lambda$ results in the original loss function being insignificant 
