@@ -1,0 +1,52 @@
+# Lecture 4
+## Model Evaluation
+- A model can be evaluated using a **test dataset**, which is different from the **training dataset** that is actually used to develop the model
+    - The test dataset is not used in training
+- The error between the model predictions of the test dataset and the actual test dataset can be fed into an **evaluation function**, which quantifies how good a model is (typically, the lower the evaluation function the better)
+- Common Evaluation Functions:
+    - **Mean Squared Error (MSE)**: $\frac{1}{n}\Sigma(y_i - \hat{y_i})^2$
+    - **Root Mean Squared Error (RMSE)**: $\sqrt{\frac{1}{n}\Sigma(y_i - \hat{y_i})^2}$
+    - **Mean Absolute Error (MAE)**: $\frac{1}{n}\Sigma|y_i - \hat{y_i}|$
+    - **R-Squared**: $R^2=1-\frac{SSE}{SST} = \frac{\sum (y_i - \hat{y_i})^2}{\sum(y_i - \bar{y_i})^2} = 1 - \frac{MSE}{Var(Y)}$
+        - Sum of squares error divided by sum of squares total
+        - This is *always* in the range [0, 1] and insensitive to the scale of Y
+            - If the fit is perfect, this is 1
+            - If the fit is just the average value of **Y** (worst possible case), this is just 0
+- **Overfitting** occurs whenever a model performs well on the *training set* but does poorly on the *testing set*
+## Model Selection
+- Process:
+    - Use *training data* to find the best parameters
+    - Use *validation data* to select the best model (e.g. feature selection or hyperparameters)
+    - Use the *test data* to evaluate the generalization performance of the best selected model
+- **Model selection** is the usage of principled methods to determine the complexity of the model (e.g. choosing a subset of predictors or the degree of the polynomial)
+    - Too many predictors or too large of a polynomial can result in overfitting
+- If there are *J* features, then there are $2^J$ possible models, which is clearly a very large search space
+    - **Stepwise Variable Selection**: Iteratively building an optimal set of predictors by optimizing a fixed model evaluation metric each time
+        - The optimal model is selected based on the *validation set*
+        - Forward Selection: Start with the single best feature (out of the *J*), and then always add the feature that *improves the performance best* and *stop if no feature further improves the performance*
+        - Backward Selection: Start with the full model (all features), and always *remove features that result in the best perforamnce enhancement*, stopping if there is *worse performance*
+        - This approach involves evaluating *J* models during the first step, then *J - 1* models during the second step, and so forth - the complexity here is $O(J^2)$
+## Cross Validation
+- Having a *fixed validation set* may result in overfitting to the *validation set*
+- *Multiple* validation sets can be used via **cross validation** methods 
+- **K-Fold Cross Validation**: Ensures that every observation in the dataset is included in at least one training set and at least one validation set
+    - Split the data into $K$ uniformly sized chunks
+    - Create $K$ number of training / validation splits, using *one of the K chunks for validation* and *the rest for training*
+    - Fit the model on each training set and evaluate it on the corresponding validation set (do not train *over* folds - reset it each time)
+    - The cross validation is the *performance of the model averaged across all validation sets*
+## Bias versus Variance
+- **Bias**: $E(\hat{f(x)}) - f(x)$ (e.g. $x^T \beta$ - $x^T \hat{\beta}$)
+    - This is how far away the expectation of the estimator is from the *true value*
+    - A smaller bias is better
+- **Variance**: $Var(\hat{f(x)}) = E[(\hat{f(x)} - E[\hat{f(x)}])^2]$
+    - This is how variant the estimator is 
+    - A smaller variance is better
+- Mean-Squared Error can be expressed as $\Sigma(x^T\hat{\beta} - y_i)^2 / n$ = $E[(\hat{f(x)} - f(x) - \epsilon)^2]$ = $bias^2 + variance + noise$
+    - Minimizing the mean squared error reduces the bias and variance
+- Variance and bias are often at odds:
+    - Achieving a very small bias often involves a complex model, which results in higher variance
+        - Think of a high degree polynomial - this can very *a lot* depending on the data points
+        - This is related to *overfitting*
+    - Achieving a very small variance results in a simple model, which results in a higher bias (not powerful enough)
+        - Think of a polynomial that does not have a high enough degree
+        - This is related to *underfitting*
