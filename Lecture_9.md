@@ -67,3 +67,38 @@
     - Do not split a region if the number of instances in the region will fall below a pre-defined threshold
     - Do not split a region if the total number of leaves in the tree will exceed a pre-defined threshold
 - Cross-validation can be used to find appropriate thresholds
+- Another common stopping condition is to determine the gain in *purity* from splitting a region $R$ into $R_1$ and $R_2$
+    - $Gain(R) = \Delta(R) = m(R) - \frac{N_1}{N}m(R_1) - \frac{N_2}{N}m(R_2)$
+        - $m$ is a metric such as Classification Error, Gini Index, or entropy
+    - If the gain is less than some pre-defined threshold, then stopping should occur
+-  An issue with *pre-specified* stopping conditions is that a tree may *stop too early* or *stop too late* - there is not enough control
+    - An alternative can be to allow a tree to grow freely and then **prune** it according to *post-specified* stopping conditions
+    - ![Pruning 1](./Images/Pruning_1.png)
+        - ![Pruning 2](./Images/Pruning_2.png)
+        - The tree is let grown freely until all regions are *pure* (e.g. zero Gini Index or Classification Error or Entropy), but then it is pruned to account for the obvious overfit
+        - The difference in this case is that the stopping criterion (e.g. a small number of values in a region) is applied *after* the tree is fully grown rather than stopping the tree from growing prematurely
+    - ![Pruning Fit](./Images/Pruning_Fit.png)
+        - This approach can often produce better models, but may require more computation power in order to allow for the tree to grow fully
+## Regression Trees
+- Decision trees can be extended to perform regression with some modifications
+    - The value based on a decision tree should be the *average* of a region 
+- The splitting criteria can now no longer be based on purity, since there are no classes
+    - Instead, the splitting criteria should be based on a different measure such as MSE
+    - $\min{\frac{N_1}{N}MSE(R_1) + \frac{N_2}{N}MSE(R_2)}$
+        - $MSE = \frac{\sum_i (y_i - \bar{y})^2}{n}$ since the predicted value for a region is just its average value
+- Just like with the classification case, the stopping conditions can be based on an accuracy gain:
+    - $Gain(R) = \Delta(R) = MSE(R) - \frac{N_1}{N}MSE(R_1) + \frac{N_2}{N}MSE(R_2)$
+- Example:
+    - ![Regression Tree](./Images/Regression_Tree.png)
+    - The cutoffs here are at $x=3.5, x=6.8, x=7.5$
+## Random Forest
+- A related approach is to **ensemble** decision trees, creating a *random forest*
+    - A single tree may not have high accuracy or may be prone to overfitting, but by using *multiple trees* this can be mitigated
+- Forests can be constructed via **bootstrap aggregating**, where the original training data is downsampled into multiple datasets (constructed with replacement) and multiple classifiers can be build from these multiple datasets
+    - A decision can be made from majority voting (for classification) or averaging the result of the different trees
+    - The different trees often sample a *subset* of the features of the dataset (not necessarily all of the features)
+- Each classifier produces a prediction $f_i(x)$, which may have low bias but also *high variance*
+    - The error can be reduced if the average of multiple classifiers is used since the variance would be reduced: $var(\frac{\sum_i f_i(x)}{t}) = var(f_i(x))/t$
+- Strengths and Weaknesses:
+    - Random forest has very good accuracy for classification tasks and can handle large-scale datasets
+    - However, random forest is not necessarily good prediction tasks (e.g. regression) nor can it be interpreted well
